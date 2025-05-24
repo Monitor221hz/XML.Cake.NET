@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
+﻿using System.Xml;
 using System.Xml.Linq;
 
 namespace XmlCake.Linq.Expressions;
@@ -12,10 +10,10 @@ public class XWrapExpression : IXExpression
 
 	public IXExpression? SkipExpression { get; set; }
 
-	public XMatch Match(List<XNode> nodes)
+	public XMatch Match(IEnumerable<XNode> nodes)
 	{
 		int p = 0;
-		int skipCount = 0; 
+		int skipCount = 0;
 		List<XNode> buffer = new List<XNode>();
 		foreach (XNode node in nodes)
 		{
@@ -36,10 +34,10 @@ public class XWrapExpression : IXExpression
 
 			}
 
-			if (p == matchSteps.Count) 
+			if (p == matchSteps.Count)
 			{
-				if (buffer.Count == matchSteps.Count) break; 
-				return new XMatch(buffer); 
+				if (buffer.Count == matchSteps.Count) break;
+				return new XMatch(buffer);
 			}
 
 		}
@@ -48,21 +46,21 @@ public class XWrapExpression : IXExpression
 	}
 
 
-	public XMatchCollection Matches(List<XNode> nodes)
+	public XMatchCollection Matches(IEnumerable<XNode> nodes)
 	{
 		int p = 0;
 
-		int skipCount = 0; 
+		int skipCount = 0;
 		List<XMatch> matchList = new List<XMatch>();
 		List<XNode> buffer = new List<XNode>();
 		foreach (XNode node in nodes)
 		{
 			if (skipCount > 0)
 			{
-				skipCount -= 1; 
+				skipCount -= 1;
 				continue;
 			}
-			if (matchSteps[p].IsMatch(node)) { p++;  }
+			if (matchSteps[p].IsMatch(node)) { p++; }
 			if (p > 0)
 			{
 				if (node.NodeType == XmlNodeType.Element)
@@ -81,13 +79,13 @@ public class XWrapExpression : IXExpression
 				matchList.Add(new XMatch(new List<XNode>(buffer)));
 				buffer.Clear();
 			}
-			
+
 
 		}
 		return new XMatchCollection(matchList);
 	}
 
-	public XMatchCollection Removes(List<XNode> nodes)
+	public XMatchCollection Removes(IEnumerable<XNode> nodes)
 	{
 		throw new System.NotImplementedException();
 	}

@@ -1,12 +1,11 @@
 ﻿namespace XmlCake.Linq;
 
-using System.Collections.Generic;
-using System.Linq;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml.Linq;
-using System.Diagnostics;
-using System.IO;
 
 public class XMapElement : XElement, IXMap
 {
@@ -43,7 +42,7 @@ public class XMapElement : XElement, IXMap
 
 	public static new XMapElement Load(string uri) => new XMapElement(XElement.Load(uri));
 
-	public static new XMapElement Load(Stream stream) => new XMapElement (XElement.Load(stream));
+	public static new XMapElement Load(Stream stream) => new XMapElement(XElement.Load(stream));
 
 	public static string TryGetAttributeName(string attributeName, XElement element)
 	{
@@ -103,18 +102,18 @@ public class XMapElement : XElement, IXMap
 
 	public void MapLayer(bool ignoreParents, params int[] pathIndices)
 	{
-		List<XElement> layerElements = new List<XElement>() { this };
+		XElement[] layerElements = [this];
 		XElement pathElement;
 		StringBuilder parentPathBuilder = new StringBuilder();
 		for (int d = 0; d < pathIndices.Length; d++)
 		{
 			pathElement = layerElements[pathIndices[d]];
 			if (!ignoreParents) MapChildElement(parentPathBuilder.ToString(), pathElement, 0);
-			layerElements = pathElement.Elements().ToList();
+			layerElements = pathElement.Elements().ToArray();
 		}
 
 		string parentPath = parentPathBuilder.ToString();
-		for (int i = 0; i < layerElements.Count; i++)
+		for (int i = 0; i < layerElements.Length; i++)
 		{
 			XElement element = layerElements[i];
 			MapChildElement(parentPath, element, i);
@@ -126,9 +125,9 @@ public class XMapElement : XElement, IXMap
 
 
 		string rootPath = useBlankPath ? string.Empty : GetPath(workingRoot);
-		List<XElement> layerElements = workingRoot.Elements().ToList();
-		Debug.Assert(layerElements.Count > 0);
-		for (int i = 0; i < layerElements.Count; i++)
+		XElement[] layerElements = workingRoot.Elements().ToArray();
+
+		for (int i = 0; i < layerElements.Length; i++)
 		{
 
 			XElement element = layerElements[i];
@@ -141,9 +140,9 @@ public class XMapElement : XElement, IXMap
 
 
 		string rootPath = useBlankPath ? string.Empty : GetPath(workingRoot);
-		List<XElement> layerElements = workingRoot.Elements().ToList();
-		Debug.Assert(layerElements.Count > 0);
-		for (int i = 0; i < layerElements.Count; i++)
+		XElement[] layerElements = workingRoot.Elements().ToArray();
+
+		for (int i = 0; i < layerElements.Length; i++)
 		{
 
 			XElement element = layerElements[i];
@@ -162,9 +161,9 @@ public class XMapElement : XElement, IXMap
 		XElement workingRoot = NavigateTo(rootPath);
 
 		rootPath = useBlankPath ? string.Empty : rootPath;
-		List<XElement> layerElements = workingRoot.Elements().ToList();
-		Debug.Assert(layerElements.Count > 0);
-		for (int i = 0; i < layerElements.Count; i++)
+		XElement[] layerElements = workingRoot.Elements().ToArray();
+
+		for (int i = 0; i < layerElements.Length; i++)
 		{
 
 			XElement element = layerElements[i];
@@ -179,9 +178,9 @@ public class XMapElement : XElement, IXMap
 
 		rootPath = useBlankPath ? string.Empty : rootPath;
 		MapChildElement(rootPath, workingRoot, 0);
-		List<XElement> layerElements = workingRoot.Elements().ToList();
-		Debug.Assert(layerElements.Count > 0);
-		for (int i = 0; i < layerElements.Count; i++)
+		XElement[] layerElements = workingRoot.Elements().ToArray();
+
+		for (int i = 0; i < layerElements.Length; i++)
 		{
 
 			XElement element = layerElements[i];
@@ -198,9 +197,9 @@ public class XMapElement : XElement, IXMap
 	{
 		if (depth < 1) return;
 		string rootPath = useBlankPath ? string.Empty : GetPath(workingRoot);
-		List<XElement> layerElements = workingRoot.Elements().ToList();
+		XElement[] layerElements = workingRoot.Elements().ToArray();
 		depth -= 1;
-		for (int i = 0; i < layerElements.Count; i++)
+		for (int i = 0; i < layerElements.Length; i++)
 		{
 			XElement element = layerElements[i];
 			string currentPath = MapChildElement(rootPath, element, i);
@@ -222,8 +221,8 @@ public class XMapElement : XElement, IXMap
 	public void MapSlice(XElement workingRoot, bool useBlankPath, Action<string, XElement> mapFunc)
 	{
 		string rootPath = useBlankPath ? string.Empty : GetPath(workingRoot);
-		List<XElement> layerElements = workingRoot.Elements().ToList();
-		for (int i = 0; i < layerElements.Count; i++)
+		XElement[] layerElements = workingRoot.Elements().ToArray();
+		for (int i = 0; i < layerElements.Length; i++)
 		{
 			XElement element = layerElements[i];
 			string currentPath = MapChildElement(rootPath, element, i, mapFunc);
@@ -235,9 +234,9 @@ public class XMapElement : XElement, IXMap
 		if (depth < 1) return;
 		XElement workingRoot = NavigateTo(rootPath);
 		rootPath = useBlankPath ? string.Empty : rootPath;
-		List<XElement> layerElements = workingRoot.Elements().ToList();
+		XElement[] layerElements = workingRoot.Elements().ToArray();
 		depth -= 1;
-		for (int i = 0; i < layerElements.Count; i++)
+		for (int i = 0; i < layerElements.Length; i++)
 		{
 			XElement element = layerElements[i];
 			string currentPath = MapChildElement(rootPath, element, i, mapFunc);
@@ -251,8 +250,8 @@ public class XMapElement : XElement, IXMap
 
 		XElement workingRoot = !String.IsNullOrEmpty(rootPath) ? NavigateTo(rootPath) : this;
 		rootPath = useBlankPath ? string.Empty : rootPath;
-		List<XElement> layerElements = workingRoot.Elements().ToList();
-		for (int i = 0; i < layerElements.Count; i++)
+		XElement[] layerElements = workingRoot.Elements().ToArray();
+		for (int i = 0; i < layerElements.Length; i++)
 		{
 			XElement element = layerElements[i];
 			string currentPath = MapChildElement(rootPath, element, i, mapFunc);
@@ -263,8 +262,8 @@ public class XMapElement : XElement, IXMap
 	public void MapSlice(XElement workingRoot, bool useBlankPath)
 	{
 		string rootPath = useBlankPath ? string.Empty : GetPath(workingRoot);
-		List<XElement> layerElements = workingRoot.Elements().ToList();
-		for (int i = 0; i < layerElements.Count; i++)
+		XElement[] layerElements = workingRoot.Elements().ToArray();
+		for (int i = 0; i < layerElements.Length; i++)
 		{
 			XElement element = layerElements[i];
 			string currentPath = MapChildElement(rootPath, element, i);
@@ -284,9 +283,9 @@ public class XMapElement : XElement, IXMap
 		if (depth < 1) return;
 		XElement workingRoot = NavigateTo(rootPath);
 		rootPath = useBlankPath ? string.Empty : rootPath;
-		List<XElement> layerElements = workingRoot.Elements().ToList();
+		XElement[] layerElements = workingRoot.Elements().ToArray();
 		depth -= 1;
-		for (int i = 0; i < layerElements.Count; i++)
+		for (int i = 0; i < layerElements.Length; i++)
 		{
 			XElement element = layerElements[i];
 			string currentPath = MapChildElement(rootPath, element, i);
@@ -304,8 +303,8 @@ public class XMapElement : XElement, IXMap
 		string thisKey = GenerateKey(this);
 		XElement workingRoot = !String.IsNullOrEmpty(rootPath) ? thisKey == rootPath ? this : NavigateTo(rootPath) : this;
 		rootPath = useBlankPath ? string.Empty : rootPath;
-		List<XElement> layerElements = workingRoot.Elements().ToList();
-		for (int i = 0; i < layerElements.Count; i++)
+		XElement[] layerElements = workingRoot.Elements().ToArray();
+		for (int i = 0; i < layerElements.Length; i++)
 		{
 			XElement element = layerElements[i];
 			string currentPath = MapChildElement(rootPath, element, i);
@@ -341,8 +340,8 @@ public class XMapElement : XElement, IXMap
 		XElement targetElement;
 
 		if (!TryLookup(path, out targetElement)) return targetElement;
-		//Debug.Assert(targetElement is not null, $"Target element at path:{path} does not exist."); 
-		//Debug.Assert(targetElement.Parent is not null, $"Target element at path:{path} has no parent.");
+		// 
+		//
 		XElement parentElement = targetElement.Parent!;
 		lock (parentElement)
 			lock (targetElement)
@@ -360,7 +359,7 @@ public class XMapElement : XElement, IXMap
 	{
 		XElement targetElement;
 		string newPath = string.Empty;
-		//Debug.Assert(targetElement is not null, $"Target element at path:{path} does not exist."); 
+		// 
 		string parentPath = path.Substring(0, path.LastIndexOf('/'));
 		if (!TryLookup(path, out targetElement))
 		{
@@ -383,7 +382,7 @@ public class XMapElement : XElement, IXMap
 	{
 		XElement parentElement;
 		string newPath = string.Empty;
-		//Debug.Assert(targetElement is not null, $"Target element at path:{path} does not exist."); 
+		// 
 		if (!TryLookup(path, out parentElement)) return newPath;
 		lock (parentElement)
 		{
@@ -398,7 +397,7 @@ public class XMapElement : XElement, IXMap
 	{
 		XElement parentElement;
 		string newPath = string.Empty;
-		//Debug.Assert(targetElement is not null, $"Target element at path:{path} does not exist."); 
+		// 
 		if (!TryLookup(path, out parentElement)) return newPath;
 		lock (parentElement)
 		{
@@ -438,7 +437,6 @@ public class XMapElement : XElement, IXMap
 	{
 		XElement targetElement;
 		if (!TryLookup(path, out targetElement)) return targetElement;
-		Debug.Assert(targetElement is not null, $"Target element at path:{path} does not exist.");
 		return new XElement(targetElement);
 	}
 

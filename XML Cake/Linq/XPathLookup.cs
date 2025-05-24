@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -10,24 +7,24 @@ namespace XmlCake.Linq;
 public class XPathLookup
 {
 
-    public XPathLookup() { }
+	public XPathLookup() { }
 
-    Dictionary<XNode, string> nodePaths = new Dictionary<XNode, string>();
+	Dictionary<XNode, string> nodePaths = new Dictionary<XNode, string>();
 
 
-	public List<XNode> MapFromElement(XElement root)
+	public IEnumerable<XNode> MapFromElement(XElement root)
 	{
 		XPathTracker tracker = new XPathTracker();
 
 
 
-		List<XNode> nodes = root.DescendantNodes().ToList();
+		IEnumerable<XNode> nodes = root.DescendantNodes();
 
 		tracker.ResolvePath(root);
 		foreach (XNode node in nodes)
 		{
 			tracker.ResolvePath(node);
-			
+
 			AddTrackedNode(node, tracker.GetCurrentPathByElement(node));
 		}
 		return nodes;
@@ -63,21 +60,21 @@ public class XPathLookup
 
 	public bool AddTrackedNode(XNode node, string path)
 	{
-		lock(nodePaths)
-		lock(node)
-		{
-			switch (node.NodeType)
+		lock (nodePaths)
+			lock (node)
 			{
-				case XmlNodeType.EndElement:
-					return false;
-				case XmlNodeType.Whitespace:
-					return false;
-				default:
-					nodePaths.Add(node, path);
-					return true;
+				switch (node.NodeType)
+				{
+					case XmlNodeType.EndElement:
+						return false;
+					case XmlNodeType.Whitespace:
+						return false;
+					default:
+						nodePaths.Add(node, path);
+						return true;
+				}
 			}
-		}
-		
+
 	}
 
 	public bool AddTrackedNode(XNode node, XPathTracker tracker) => AddTrackedNode(node, tracker.GetCurrentPathByElement(node));

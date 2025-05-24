@@ -5,10 +5,10 @@ namespace XmlCake.Linq.Expressions;
 
 public interface IXExpression
 {
-	public XMatchCollection Matches(List<XNode> nodes); 
-	public XMatch Match(List<XNode> nodes);
+	public XMatchCollection Matches(IEnumerable<XNode> nodes);
+	public XMatch Match(IEnumerable<XNode> nodes);
 
-	public XMatchCollection Removes(List<XNode> nodes);
+	public XMatchCollection Removes(IEnumerable<XNode> nodes);
 
 }
 
