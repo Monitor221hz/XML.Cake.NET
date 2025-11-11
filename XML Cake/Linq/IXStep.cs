@@ -2,8 +2,8 @@
 
 namespace XmlCake.Linq.Expressions
 {
-	public interface IXStep
-	{
-		bool IsMatch(XObject xmlObject);
-	}
+    public interface IXStep
+    {
+        bool IsMatch(XObject xmlObject);
+    }
 }
