@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace XmlCake.Linq;
 
-public class XPathLookup
+public class XPathLookup : IXPathLookup
 {
     public XPathLookup() { }
 
