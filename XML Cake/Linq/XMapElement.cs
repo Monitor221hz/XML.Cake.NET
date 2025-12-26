@@ -355,7 +355,7 @@ public class XMapElement : XElement, IXMap
         XElement targetElement;
 
         if (!TryLookup(path, out targetElement))
-            return targetElement;
+            return newElement;
         //
         //
         XElement parentElement = targetElement.Parent!;
@@ -367,7 +367,7 @@ public class XMapElement : XElement, IXMap
                 newElement = (XElement)marker.GetMarkedNode();
                 MapResetDuplicates(path, newElement);
             }
-        return targetElement;
+        return newElement;
     }
 
     //todo: proper insertelement method with remapping of parent
@@ -376,7 +376,11 @@ public class XMapElement : XElement, IXMap
     {
         XElement targetElement;
         string newPath = string.Empty;
-        //
+        int lastPathSeparatorIndex = path.LastIndexOf('/');
+        if (lastPathSeparatorIndex < 0)
+        {
+            return newPath;
+        }
         string parentPath = path.Substring(0, path.LastIndexOf('/'));
         if (!TryLookup(path, out targetElement))
         {
@@ -449,8 +453,9 @@ public class XMapElement : XElement, IXMap
     public XElement RemoveElement(string path)
     {
         XElement targetElement;
-
-        string parentPath = path.Substring(0, path.LastIndexOf('/'));
+        var lastSeparatorIndex = path.LastIndexOf('/');
+        string? parentPath =
+            lastSeparatorIndex == -1 ? null : path.Substring(0, path.LastIndexOf('/'));
         if (!TryLookup(path, out targetElement))
             return targetElement;
         XElement parentElement = targetElement.Parent!;
@@ -461,9 +466,13 @@ public class XMapElement : XElement, IXMap
             {
                 if (!mappedElements.Remove(path))
                     return targetElement;
-                //path = GetPath(parentPath, targetElement, parentElement.Elements().Count());
-                //mappedElements.Remove(path);
-                //removing this path is necessary for full data integrity but it also messes up any existing paths to the container by index
+                // if the below code causes issues just comment it out
+                if (parentPath != null)
+                {
+                    path = GetPath(parentPath, targetElement, parentElement.Elements().Count());
+                    mappedElements.Remove(path);
+                }
+                // removing this path is necessary for full data integrity but it also messes up any existing paths to the container by index
             }
             MapSlice(parentElement, false, MapResetDuplicates);
         }
